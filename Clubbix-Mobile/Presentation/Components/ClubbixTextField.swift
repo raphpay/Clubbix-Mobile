@@ -11,6 +11,7 @@ struct ClubbixTextField: View {
 	var placeholder: String
 	var textInputAutocapitalization: TextInputAutocapitalization = .words
 	var keyboardType: UIKeyboardType = UIKeyboardType.default
+	var autocorrectionDisabled: Bool = true
 
 	@Binding var text: String
 
@@ -21,6 +22,7 @@ struct ClubbixTextField: View {
 			TextField(placeholder, text: $text)
 				.textInputAutocapitalization(textInputAutocapitalization)
 				.keyboardType(keyboardType)
+				.autocorrectionDisabled(autocorrectionDisabled)
 				.textFieldStyle(.roundedBorder)
 		}
     }
