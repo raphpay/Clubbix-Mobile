@@ -8,20 +8,21 @@
 import SwiftUI
 
 struct LoginView: View {
-	@State private var email = ""
-	@State private var password = ""
-	@State private var path = NavigationPath()
+	@StateObject private var viewModel = LoginViewModel()
 
 	var body: some View {
-		NavigationStack(path: $path) {
+		NavigationStack(path: $viewModel.path) {
 			VStack {
 				Text("Clubbix")
 					.font(.title)
 					.fontWeight(.bold)
 				Spacer()
-				ClubbixTextField(placeholder: "Email", text: $email)
+				ClubbixTextField(placeholder: "Email",
+								 textInputAutocapitalization: .never,
+								 keyboardType: .emailAddress,
+								 text: $viewModel.email)
 				Divider()
-				ClubbixTextField(placeholder: "Mot de passe", text: $password)
+				ClubbixSecureField(placeholder: "Mot de passe", text: $viewModel.password)
 				Spacer()
 
 				ClubbixPrimaryButton(title: "Se connecter") {
@@ -29,7 +30,7 @@ struct LoginView: View {
 				}
 
 				ClubbixTextButton(title: "Créer un compte") {
-					path.append("register")
+					viewModel.path.append("register")
 				}
 			}
 			.padding()

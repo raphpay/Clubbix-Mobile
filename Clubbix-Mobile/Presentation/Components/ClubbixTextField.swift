@@ -9,6 +9,9 @@ import SwiftUI
 
 struct ClubbixTextField: View {
 	var placeholder: String
+	var textInputAutocapitalization: TextInputAutocapitalization = .words
+	var keyboardType: UIKeyboardType = UIKeyboardType.default
+
 	@Binding var text: String
 
     var body: some View {
@@ -16,6 +19,8 @@ struct ClubbixTextField: View {
 			Text(placeholder)
 
 			TextField(placeholder, text: $text)
+				.textInputAutocapitalization(textInputAutocapitalization)
+				.keyboardType(keyboardType)
 				.textFieldStyle(.roundedBorder)
 		}
     }
