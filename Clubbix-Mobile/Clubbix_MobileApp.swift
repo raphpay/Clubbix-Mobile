@@ -11,7 +11,7 @@ import SwiftUI
 struct Clubbix_MobileApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+			LoginView()
         }
     }
 }
