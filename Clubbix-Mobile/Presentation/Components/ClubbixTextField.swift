@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct ClubbixTextField: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+	var placeholder: String
+	@Binding var text: String
 
-#Preview {
-    ClubbixTextField()
+    var body: some View {
+		VStack(alignment: .leading) {
+			Text(placeholder)
+
+			TextField(placeholder, text: $text)
+				.textFieldStyle(.roundedBorder)
+		}
+    }
 }
