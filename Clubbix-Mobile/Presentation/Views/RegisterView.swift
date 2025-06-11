@@ -16,51 +16,61 @@ struct RegisterView: View {
 	@StateObject private var viewModel = RegisterViewModel()
 	@Binding var path: NavigationPath
 
-    var body: some View {
-		ScrollView {
-			Spacer()
-			Text("Clubbix")
-				.font(.title)
+	var body: some View {
+		ZStack {
+			ScrollView {
+				Spacer()
+				Text("Clubbix")
+					.font(.title)
 
 
-			Picker("Choisir un type de compte", selection: $viewModel.accountType) {
-				ForEach(AccountType.allCases, id: \.self) {
-					Text($0.rawValue)
-				}
-			}
-			.onChange(of: viewModel.accountType, { _, newValue in
-				viewModel.reset()
-			})
-			.pickerStyle(.segmented)
-
-			Spacer()
-
-			informationForm
-
-			Spacer()
-
-			if viewModel.step == 1 {
-				ClubbixPrimaryButton(title: "Continuer") {
-					withAnimation {
-						viewModel.tapContinueButton()
+				Picker("Choisir un type de compte", selection: $viewModel.accountType) {
+					ForEach(AccountType.allCases, id: \.self) {
+						Text($0.rawValue)
 					}
 				}
-			} else {
-				ClubbixPrimaryButton(title: "S'inscrire") {
-					//
+				.onChange(of: viewModel.accountType, { _, newValue in
+					viewModel.reset()
+				})
+				.pickerStyle(.segmented)
+
+				Spacer()
+
+				informationForm
+
+				Spacer()
+
+				if viewModel.step == 1 {
+					ClubbixPrimaryButton(title: "Continuer") {
+						Task {
+							try await viewModel.tapContinueButton()
+						}
+					}
+				} else {
+					ClubbixPrimaryButton(title: "S'inscrire") {
+						//
+					}
 				}
-			}
 
-			ClubbixTextButton(title: "Déjà un compte ?") {
-				path.removeLast()
-			}
+				ClubbixTextButton(title: "Déjà un compte ?") {
+					path.removeLast()
+				}
 
-			Spacer()
+				Spacer()
+			}
+			.navigationTitle("Créer un compte")
+			.padding()
+			.background(Color.background)
+
+			if viewModel.isLoading {
+				Color.black.opacity(0.3)
+					.ignoresSafeArea()
+				ProgressView()
+					.progressViewStyle(CircularProgressViewStyle(tint: .white))
+					.scaleEffect(1.5)
+			}
 		}
-		.navigationTitle("Créer un compte")
-		.padding()
-		.background(Color.background)
-    }
+	}
 
 	var informationForm: some View {
 		VStack(alignment: .leading) {

@@ -5,7 +5,7 @@
 //  Created by Raphaël Payet on 10/06/2025.
 //
 
-import Foundation
+import SwiftUI
 
 final class RegisterViewModel: ObservableObject {
 	@Published var accountType: AccountType = .member
@@ -18,24 +18,52 @@ final class RegisterViewModel: ObservableObject {
 	@Published var step = 1
 	@Published var wrongClubNameAttempts = CGFloat(0)
 	@Published var wrongClubCodeAttempts = CGFloat(0)
+	@Published var isLoading = false
 
-	func tapContinueButton() {
-		accountType == .member ? checkClubCode() : checkClubName()
+	let clubUseCase = ClubUseCase()
+
+	func tapContinueButton() async throws {
+		try await accountType == .member ? checkClubCode() : checkClubName()
 	}
 
-	func checkClubCode() {
+	func checkClubCode() async throws {
+		DispatchQueue.main.async {
+			self.isLoading = true
+		}
 		if !clubCode.isEmpty {
-			step += 1
+			do {
+				if let club = try await clubUseCase.getClubByCode(clubCode) {
+					handleResponse(success: true)
+				} else {
+					handleResponse(success: false)
+				}
+			} catch {
+				handleResponse(success: false)
+				throw error
+			}
 		} else {
-			wrongClubNameAttempts += 1
+			handleResponse(success: false)
 		}
 	}
 
-	func checkClubName() {
+	func checkClubName() async throws {
+		DispatchQueue.main.async {
+			self.isLoading = true
+		}
 		if !clubName.isEmpty {
-			step += 1
+			do {
+				if let club = try await clubUseCase.getClubByName(clubName) {
+					// A club was found -> the user needs to choose another one
+					handleResponse(for: .club, success: true)
+				} else {
+					handleResponse(for: .club, success: false)
+				}
+			} catch {
+				handleResponse(for: .club, success: false)
+				throw error
+			}
 		} else {
-			wrongClubCodeAttempts += 1
+			handleResponse(for: .club, success: false)
 		}
 	}
 
@@ -45,5 +73,22 @@ final class RegisterViewModel: ObservableObject {
 		clubCode = ""
 		wrongClubCodeAttempts = 0
 		wrongClubNameAttempts = 0
+	}
+
+	private func handleResponse(for accountType: AccountType = .club, success: Bool) {
+		DispatchQueue.main.async {
+			withAnimation {
+				self.isLoading = false
+				if success {
+					self.step += 1
+				} else {
+					if accountType == .member {
+						self.wrongClubCodeAttempts += 1
+					} else {
+						self.wrongClubNameAttempts += 1
+					}
+				}
+			}
+		}
 	}
 }
