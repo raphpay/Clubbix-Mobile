@@ -14,6 +14,7 @@ enum AccountType: String, Codable, CaseIterable {
 
 struct RegisterView: View {
 	@StateObject private var viewModel = RegisterViewModel()
+	@Binding var path: NavigationPath
 
     var body: some View {
 		ScrollView {
@@ -39,7 +40,7 @@ struct RegisterView: View {
 			Spacer()
 
 			if viewModel.step == 1 {
-				ClubbixTextButton(title: "Continuer") {
+				ClubbixPrimaryButton(title: "Continuer") {
 					withAnimation {
 						viewModel.tapContinueButton()
 					}
@@ -51,7 +52,7 @@ struct RegisterView: View {
 			}
 
 			ClubbixTextButton(title: "Déjà un compte ?") {
-				//
+				path.removeLast()
 			}
 
 			Spacer()
@@ -152,5 +153,5 @@ struct ClubInfoLine: View {
 }
 
 #Preview {
-	RegisterView()
+	RegisterView(path: .constant(NavigationPath()))
 }

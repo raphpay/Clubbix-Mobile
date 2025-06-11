@@ -9,9 +9,10 @@ import SwiftUI
 
 struct LoginView: View {
 	@StateObject private var viewModel = LoginViewModel()
+	@State private var path = NavigationPath()
 
 	var body: some View {
-		NavigationStack(path: $viewModel.path) {
+		NavigationStack(path: $path) {
 			VStack {
 				Text("Clubbix")
 					.font(.title)
@@ -30,14 +31,14 @@ struct LoginView: View {
 				}
 
 				ClubbixTextButton(title: "Créer un compte") {
-					viewModel.path.append("register")
+					path.append("register")
 				}
 			}
 			.padding()
 			.background(Color.background)
 			.navigationDestination(for: String.self) { value in
 				if value == "register" {
-					RegisterView()
+					RegisterView(path: $path)
 				}
 			}
 		}
